@@ -26,6 +26,17 @@
             @endif
 
         </div>
+        <div>
+            @forelse ($project->technologies as $technology)
+                <span class="my-5">{{ $technology->label }} @if (!$loop->last)
+                        ,
+                    @else.
+                </span>
+            @endif
+        @empty Nessuna
+            @endforelse
+
+        </div>
         <hr>
         <div class="d-flex justify-content-end">
 

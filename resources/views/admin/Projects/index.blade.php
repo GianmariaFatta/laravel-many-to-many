@@ -16,6 +16,7 @@
                 <th scope="col">Title</th>
                 <th scope="col">Slug</th>
                 <th scope="col">Type</th>
+                <th scope="col">Technology</th>
                 <th scope="col">Creato il </th>
                 <th scope="col">Aggiornato il </th>
                 <th> </th>
@@ -29,6 +30,15 @@
                     <td>{{ $project->title }}</td>
                     <td>{{ $project->slug }}</td>
                     <td>{{ $project->type?->label }}</td>
+                    <td>
+                        @forelse($project->technologies as $technology)
+                            {{ $technology->label }}
+                        @empty
+                            -
+                        @endforelse
+
+
+                    </td>
                     <td>{{ $project->created_at }}</td>
                     <td>{{ $project->updated_at }}</td>
                     <td class='d-flex justify-content-center align-items-center'>
@@ -47,7 +57,7 @@
                 </tr>
             @empty
                 <tr>
-                    <th scope='row' colspan='6' class='text-center'>Non ci sono Progetti</th scope='row'>
+                    <th scope='row' colspan='8' class='text-center'>Non ci sono Progetti</th scope='row'>
                 </tr>
             @endforelse
         </tbody>

@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Models\Technology;
 use App\Models\Type;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -32,7 +33,8 @@ class ProjectController extends Controller
         $project = new Project();
         $types =Type::all();
         $technologies= Technology::all();
-        return view('admin.projects.create',compact('project', 'types','technologies'));
+        $project_technologies=[];
+        return view('admin.projects.create',compact('project', 'types','technologies', 'project_technologies'));
     }
 
     /**
@@ -46,6 +48,7 @@ class ProjectController extends Controller
         'description'=>'required|string|',
         'thumb'=>'nullable|image|mimes:jpeg,jpg,png,svg',
         'type_id'=> 'nullable|exists:types,id',
+        'technologies' => 'nullable|exists:technologies,id',
         
         ]);
 
@@ -62,11 +65,11 @@ class ProjectController extends Controller
 
         $project->fill($data);
 
-       
-
         $project->save();
 
-        return to_route('admin.projects.index');
+        if(Arr::exists($data, 'technologies')) $project->technologies()->attach($data['technologies']);
+    
+        return to_route('admin.projects.show', $project->id);
     }
 
     /**
@@ -86,10 +89,12 @@ class ProjectController extends Controller
         $project= Project::findorfail($id);
         $types =Type::all();
         $technologies= Technology::all();
-        return view('admin.projects.edit',compact('project', 'types','technologies'));
+        $project_technologies= $project->technologies->pluck('id')->toArray();
+
+        return view('admin.projects.edit',compact('project', 'types','technologies', 'project_technologies'));
     }
 
-    /**
+    /** 
      * Update the specified resource in storage.
      */
     public function update(Request $request, Project $project)
@@ -100,6 +105,7 @@ class ProjectController extends Controller
         'description'=>'|string|',
         'thumb'=>'nullable|image|mimes:jpeg,jpg,png,svg',
         'type_id'=> 'nullable|exists:types,id',
+        'technologies' => 'nullable|exists:technologies,id'
         
         ]);
 
@@ -115,6 +121,9 @@ class ProjectController extends Controller
 
         $project->update($data);
 
+        if(Arr::exists($data , 'technologies')) $project->technologies()->sync($data['technologies']);
+        else  if(count($project->technologies))  $project->tecnologies()->detach();
+        
         return to_route('admin.projects.show', $project->id)->with('type', 'success')->with('message','Progetto modificato con successo');
     }
 
@@ -126,7 +135,9 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
 
         if($project->thumb)Storage::delete($project->thumb);
-
+        
+        if(count($project->technologies))  $project->tecnologies()->detach();
+        
         $project->delete();
         return to_route('admin.projects.index')
             ->with('message', "Il progetto '$project->title' è stato eliminato con successo")
