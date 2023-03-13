@@ -86,7 +86,7 @@ class ProjectController extends Controller
         $project= Project::findorfail($id);
         $types =Type::all();
         $technologies= Technology::all();
-        return view('admin.projects.create',compact('project', 'types','technologies'));
+        return view('admin.projects.edit',compact('project', 'types','technologies'));
     }
 
     /**

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Crea un nuovo progetto')
+@section('title', 'Modifica Progetto')
 
 
 @section('content')
