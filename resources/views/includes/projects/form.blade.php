@@ -68,7 +68,14 @@
 
       <div class="row">
 
-
+          <div class="col mb-3">
+              @foreach ($technologies as $technology)
+                  <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" id="technology_id">
+                      <label class="form-check-label" for='tag_id'>{{ $technology->label }}</label>
+                  </div>
+              @endforeach
+          </div>
 
 
           <div class="mb-3">
